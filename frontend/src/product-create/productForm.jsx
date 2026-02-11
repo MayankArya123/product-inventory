@@ -1,43 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../services/api";
 import "./productForm.css";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const ProductForm = ({ selectedProduct }) => {
+const ProductForm = () => {
+  const { id } = useParams();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [existingImages, setExistingImages] = useState([]); // images already uploaded
+  const [newImages, setNewImages] = useState([]); // images newly added
+
   const [form, setForm] = useState({
     name: "",
     price: "",
     description: "",
-    image: [],
   });
 
-  React.useEffect(() => {
-    if (selectedProduct) {
-      setForm(selectedProduct);
+  const navigate = useNavigate();
+
+  const getProduct = async () => {
+    try {
+      const res = await API.get(`/products/${id}`);
+      setSelectedProduct(res?.data);
+      setForm({
+        name: res?.data?.name,
+        price: res?.data?.price,
+        description: res?.data?.description,
+      });
+      setExistingImages(res?.data?.images || []);
+    } catch (err) {
+      console.log("error in getting product");
     }
-  }, [selectedProduct]);
+  };
+
+  useEffect(() => {
+    if (id) {
+      getProduct();
+    }
+  }, [id]);
+
+  const handleFileChange = (e) => {
+    const filesArray = Array.from(e.target.files);
+    setNewImages((prev) => [...prev, ...filesArray]);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e) => {
-    setForm({
-      ...form,
-      image: e.target.files[0],
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (selectedProduct) {
-      await API.put(`/products/${selectedProduct._id}`, form);
-      alert("Product Updated");
-    } else {
-      await API.post("/products", form);
-      alert("Product Created");
-    }
+    const formData = new FormData();
 
+    formData.append("name", form.name);
+    formData.append("price", form.price);
+    formData.append("description", form.description);
+
+    if (selectedProduct) {
+      existingImages.forEach((img) => formData.append("existingImages", img));
+      newImages.forEach((file) => formData.append("images", file));
+      await API.put(`/products/${selectedProduct._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Product Updated");
+      navigate("/");
+    } else {
+      newImages.forEach((file) => formData.append("images", file));
+      await API.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Product Created");
+      navigate("/");
+    }
     setForm({ name: "", price: "", description: "" });
   };
 
@@ -72,16 +112,47 @@ const ProductForm = ({ selectedProduct }) => {
           required
         />
 
-        {/* Image Upload */}
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleImageChange}
-          // required={!selectedProduct}
-        />
+        <input type="file" name="images" multiple onChange={handleFileChange} />
 
-        <button type="submit">
+        {existingImages && existingImages.length > 0 && (
+          <p> Total {existingImages.length + newImages.length} images </p>
+        )}
+        <div className="all-images">
+          {[...existingImages].map((img, idx) => (
+            <div key={`exist-${idx}`} className="image-preview">
+              <img
+                src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${img}`}
+                alt={`product-${idx}`}
+              />
+              <button
+                type="button"
+                className="remove-img-btn"
+                onClick={() =>
+                  setExistingImages(existingImages.filter((_, i) => i !== idx))
+                }
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          {[...newImages].map((file, idx) => (
+            <div key={`new-${idx}`} className="image-preview">
+              <img src={URL.createObjectURL(file)} alt={`new-${idx}`} />
+              <button
+                type="button"
+                className="remove-img-btn"
+                onClick={() =>
+                  setNewImages(newImages.filter((_, i) => i !== idx))
+                }
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <button className="create-update-btn" type="submit">
           {selectedProduct ? "Update Product" : "Add Product"}
         </button>
       </form>

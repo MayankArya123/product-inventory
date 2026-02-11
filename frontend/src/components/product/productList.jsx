@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import "./productList.css";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     const res = await API.get(`/products`);
@@ -16,9 +17,13 @@ const ProductList = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    await API.delete(`/products/${id}`);
-    alert("Product Deleted");
-    fetchProducts();
+    try {
+      await API.delete(`/products/${id}`);
+      alert("Product Deleted");
+      fetchProducts();
+    } catch (err) {
+      console.log("error deleting product", err);
+    }
   };
 
   return (
@@ -33,10 +38,14 @@ const ProductList = () => {
         {products?.map((product) => (
           <div key={product._id} className="product-card">
             <div className="card-image-box">
-              <img
-                src={"https://picsum.photos/seed/picsum/200/300"}
-                alt="image"
-              />
+              {product?.images ? (
+                <img
+                  src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${product?.images[0]}`}
+                  alt="images"
+                />
+              ) : (
+                <img />
+              )}
             </div>
 
             <div className="card-bottom">
@@ -45,21 +54,27 @@ const ProductList = () => {
                 <span>₹{product.price}</span>
               </div>
 
-              <p>{product.description}</p>
+              <div className="text-truncate">
+                {product.description.slice(0, 50)}
+              </div>
 
-              <button
-                className="edit-btn"
-                onClick={() => setSelectedProduct(product)}
-              >
-                Edit
-              </button>
+              <div className="btns-warpper">
+                <button
+                  className="edit-btn"
+                  onClick={() => {
+                    navigate(`/product-edit/${product?._id}`);
+                  }}
+                >
+                  Edit
+                </button>
 
-              <button
-                className="delete-btn"
-                onClick={() => handleDelete(product._id)}
-              >
-                Delete
-              </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(product._id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}

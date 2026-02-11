@@ -25,7 +25,7 @@
 
 .products-list .card-bottom .top-info {
   padding-top: 0.3em;
-  padding-bottom: 0.3em;  
+  padding-bottom: 0.3em;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,6 +103,12 @@
   background-color: #059669;
 }
 
+.btns-warpper {
+  margin-top: 0.6em;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .delete-btn {
   background-color: #ef4444;
   color: white;
@@ -111,4 +117,16 @@
   border-radius: 5px;
   cursor: pointer;
   margin-left: 1em;
+}
+
+.text-truncate {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  height: 30%;
 }

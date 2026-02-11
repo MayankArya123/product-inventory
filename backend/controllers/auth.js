@@ -8,8 +8,6 @@ const login = async (req, res) => {
   try {
     const returnedUser = await User.findOne({ username: username });
 
-
-
     if (!returnedUser) {
       return res.status(401).json({ msg: "Invalid Credentails" });
     }
@@ -17,7 +15,7 @@ const login = async (req, res) => {
     const check = await bcrypt.compare(password, returnedUser.password);
 
     if (!check) {
-     return res.status(401).json({
+      return res.status(401).json({
         msg: "Invalid Password",
       });
     }

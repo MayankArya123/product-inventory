@@ -1,10 +1,14 @@
 const Product = require("../schemas/product");
 const slugify = require("slugify");
+const path = require("path");
+const fs = require("fs");
 
 const createProduct = async (req, res) => {
   const userId = req.user?.id;
 
   const { name, price, description } = req.body;
+
+  const files = req.files;
 
   var slug = slugify(name, {
     lower: true,
@@ -24,27 +28,63 @@ const createProduct = async (req, res) => {
       description,
       slug,
       user: userId,
+      images: files.map((file) => file.filename),
     });
 
     res.status(200).json(createdProduct);
   } catch (err) {
-    console.log("error in fetching products", err);
+    // console.log("error in fetching products", err);
   }
 };
 
 const updateProduct = async (req, res) => {
+  const productId = req?.params?.id;
+
+  const { name, price, description } = req.body;
+
+  const files = req.files;
+
+  const product = await Product.findById(productId);
+  if (!product) return res.status(404).json({ msg: "Product not found" });
+
+  const existingImages = req.body.existingImages;
+
+  const filteredImages = product.images.filter((productImg) => {
+    if (existingImages?.includes(productImg)) {
+      return productImg;
+    }
+  });
+
+  const newImages = req.files.map((file) => file.filename);
+
+  const updatedImages = [...filteredImages, ...newImages];
+
+  const updateData = {
+    name,
+    price,
+    description,
+    images: updatedImages,
+  };
+
   try {
-  } catch (err) {}
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      updateData,
+      {
+        new: true,
+      },
+    );
+
+    res.status(200).json(updatedProduct);
+  } catch (err) {
+    console.log("error in updating product", err);
+  }
 };
 
 const getUserProducts = async (req, res) => {
-
-
   const userId = req.user?.id;
 
   try {
-
-
     const userProducts = await Product.find({
       user: userId,
     });
@@ -56,13 +96,26 @@ const getUserProducts = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
+  const productId = req.params?.id;
+
   try {
-  } catch (err) {}
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    res.status(200).json(deletedProduct);
+  } catch (err) {
+    console.log("error deleting product", err);
+  }
 };
 
 const getProduct = async (req, res) => {
+  const productId = req.params?.id;
+
   try {
-  } catch (err) {}
+    const product = await Product.findOne({ _id: productId });
+    res.json(product);
+  } catch (err) {
+    console.log("error in getting product", err);
+  }
 };
 
 module.exports = {
