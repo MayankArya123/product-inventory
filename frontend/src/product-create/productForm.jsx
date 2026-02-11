@@ -3,13 +3,15 @@ import API from "../services/api";
 import "./productForm.css";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const ProductForm = () => {
   const { id } = useParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [existingImages, setExistingImages] = useState([]); // images already uploaded
-  const [newImages, setNewImages] = useState([]); // images newly added
+  const [existingImages, setExistingImages] = useState([]); 
+  const [newImages, setNewImages] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -104,12 +106,13 @@ const ProductForm = () => {
           required
         />
 
-        <textarea
-          name="description"
-          placeholder="Product Description"
-          value={form.description}
-          onChange={handleChange}
-          required
+        <CKEditor
+          editor={ClassicEditor}
+          data={form.description}
+          onChange={(event, editor) => {
+            const data = editor.getData();
+            setForm((prev) => ({ ...prev, description: data }));
+          }}
         />
 
         <input type="file" name="images" multiple onChange={handleFileChange} />

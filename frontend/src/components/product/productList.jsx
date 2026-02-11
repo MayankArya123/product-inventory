@@ -54,26 +54,38 @@ const ProductList = () => {
                 <span>₹{product.price}</span>
               </div>
 
-              <div className="text-truncate">
-                {product.description.slice(0, 50)}
-              </div>
+              <div
+                className="text-truncate"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              ></div>
 
               <div className="btns-warpper">
                 <button
-                  className="edit-btn"
+                  className="view-product"
                   onClick={() => {
-                    navigate(`/product-edit/${product?._id}`);
+                    navigate(`/product-view/${product?._id}`);
                   }}
                 >
-                  Edit
+                  {" "}
+                  view
                 </button>
+                <div className="btns">
+                  <button
+                    className="edit-btn"
+                    onClick={() => {
+                      navigate(`/product-edit/${product?._id}`);
+                    }}
+                  >
+                    Edit
+                  </button>
 
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(product._id)}
-                >
-                  Delete
-                </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(product._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -114,7 +114,7 @@ const getProduct = async (req, res) => {
     const product = await Product.findOne({ _id: productId });
     res.json(product);
   } catch (err) {
-    console.log("error in getting product", err);
+    console.log("error in getting product check", err);
   }
 };
 

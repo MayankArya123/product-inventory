@@ -87,6 +87,14 @@
   justify-content: center;
 }
 
+.text-description {
+  margin: 0 1em;
+}
+
 .remove-img-btn:hover {
   background: rgba(255, 0, 0, 1);
+}
+
+.ck.ck-editor {
+  margin-bottom: 1em !important;
 }
