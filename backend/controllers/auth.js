@@ -30,11 +30,13 @@ const login = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       user: returnedUser,
       token: token,
     });
-  } catch (err) {}
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err?.message });
+  }
 };
 
 const register = async (req, res) => {
@@ -66,24 +68,19 @@ const register = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       user: userSaved,
       token: token,
     });
-  } catch (err) {}
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err?.message });
+  }
 };
 
 const getLoggedInUser = async (req, res) => {
-  const userId = req.user.id;
-
   const user = await User.findById(req.user.id);
 
-  res.json({
-    success: true,
-    user,
-  });
-
-  return res.json({
+  return res.status(200).json({
     user: user,
   });
 };
