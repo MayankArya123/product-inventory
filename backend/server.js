@@ -9,8 +9,12 @@ const checkAuth = require("./middleware/auth");
 const app = express();
 
 connectDb();
-
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 app.use("/auth", authRoutes);
