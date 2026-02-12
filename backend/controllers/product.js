@@ -29,9 +29,9 @@ const createProduct = async (req, res) => {
       images: files.map((file) => file.filename),
     });
 
-    res.status(200).json(createdProduct);
+    return res.status(200).json(createdProduct);
   } catch (err) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       errors: "validation error",
     });
@@ -80,8 +80,10 @@ const updateProduct = async (req, res) => {
       },
     );
 
-    res.status(200).json(updatedProduct);
-  } catch (err) {}
+    return res.status(200).json(updatedProduct);
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err?.message });
+  }
 };
 
 const getUserProducts = async (req, res) => {
@@ -92,8 +94,10 @@ const getUserProducts = async (req, res) => {
       user: userId,
     });
 
-    res.status(200).json(userProducts);
-  } catch (err) {}
+    return res.status(200).json(userProducts);
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err?.message });
+  }
 };
 
 const deleteProduct = async (req, res) => {
@@ -102,9 +106,9 @@ const deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(productId);
 
-    res.status(200).json(deletedProduct);
+    return res.status(200).json(deletedProduct);
   } catch (err) {
-    // ("error deleting product", err);
+    return res.status(500).json({ success: false, message: err?.message });
   }
 };
 
@@ -113,8 +117,10 @@ const getProduct = async (req, res) => {
 
   try {
     const product = await Product.findOne({ _id: productId });
-    res.json(product);
-  } catch (err) {}
+    return res.json(product);
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err?.message });
+  }
 };
 
 module.exports = {
