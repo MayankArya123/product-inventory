@@ -45,7 +45,7 @@ const ProductList = () => {
                   alt="images"
                 />
               ) : (
-                <img />
+                <img alt="img" />
               )}
             </div>
 

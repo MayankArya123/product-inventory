@@ -16,11 +16,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post("/auth/register", form);
+      await API.post("/auth/register", form);
       toast.success("Registration successful!");
       navigate("/login");
     } catch (err) {
-      alert("Error registering user");
+      toast.error("Error registering user");
       if (err.response?.data?.errors) {
         const formattedErrors = {};
 
