@@ -6,7 +6,7 @@ const checkAuth = async (req, res, next) => {
 
   if (!token) {
     return res.status(401).json({
-      msg: "to valid token",
+      msg: "no valid token",
     });
   }
 
