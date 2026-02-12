@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import "./productList.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -19,10 +20,10 @@ const ProductList = () => {
   const handleDelete = async (id) => {
     try {
       await API.delete(`/products/${id}`);
-      alert("Product Deleted");
+      toast.success("Product Deleted successfully");
       fetchProducts();
     } catch (err) {
-      console.log("error deleting product", err);
+      // console.log("error deleting product", err);
     }
   };
 

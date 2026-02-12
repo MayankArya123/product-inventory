@@ -1,7 +1,5 @@
 const Product = require("../schemas/product");
 const slugify = require("slugify");
-const path = require("path");
-const fs = require("fs");
 
 const createProduct = async (req, res) => {
   const userId = req.user?.id;
@@ -33,7 +31,10 @@ const createProduct = async (req, res) => {
 
     res.status(200).json(createdProduct);
   } catch (err) {
-    // console.log("error in fetching products", err);
+    res.status(400).json({
+      success: false,
+      errors: "validation error",
+    });
   }
 };
 
@@ -47,7 +48,11 @@ const updateProduct = async (req, res) => {
   const product = await Product.findById(productId);
   if (!product) return res.status(404).json({ msg: "Product not found" });
 
-  const existingImages = req.body.existingImages;
+  const existingImages = req.body.existingImages
+    ? Array.isArray(req.body.existingImages)
+      ? req.body.existingImages
+      : [req.body.existingImages]
+    : [];
 
   const filteredImages = product.images.filter((productImg) => {
     if (existingImages?.includes(productImg)) {
@@ -55,7 +60,7 @@ const updateProduct = async (req, res) => {
     }
   });
 
-  const newImages = req.files.map((file) => file.filename);
+  const newImages = files.map((file) => file.filename);
 
   const updatedImages = [...filteredImages, ...newImages];
 
@@ -77,7 +82,7 @@ const updateProduct = async (req, res) => {
 
     res.status(200).json(updatedProduct);
   } catch (err) {
-    console.log("error in updating product", err);
+    // console.log("error in updating product", err);
   }
 };
 
@@ -91,7 +96,7 @@ const getUserProducts = async (req, res) => {
 
     res.status(200).json(userProducts);
   } catch (err) {
-    console.log("error in fetching products", err);
+    // console.log("error in fetching products", err);
   }
 };
 
@@ -103,7 +108,7 @@ const deleteProduct = async (req, res) => {
 
     res.status(200).json(deletedProduct);
   } catch (err) {
-    console.log("error deleting product", err);
+    // console.log("error deleting product", err);
   }
 };
 
@@ -114,7 +119,7 @@ const getProduct = async (req, res) => {
     const product = await Product.findOne({ _id: productId });
     res.json(product);
   } catch (err) {
-    console.log("error in getting product check", err);
+    // console.log("error in getting product check", err);
   }
 };
 

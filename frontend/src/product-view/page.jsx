@@ -12,7 +12,7 @@ const ProductView = () => {
     const fetchProduct = async () => {
       try {
         const res = await API.get(`/products/${id}`);
-        console.log("response", res);
+
         setProduct(res.data);
         setMainImage(res.data.images?.[0] || "");
       } catch (err) {

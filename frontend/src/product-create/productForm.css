@@ -21,10 +21,10 @@
 .product-form input,
 .product-form textarea {
   padding: 12px;
-  margin-bottom: 15px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   font-size: 14px;
+  margin-bottom: 1em;
 }
 
 .product-form textarea {
@@ -96,5 +96,16 @@
 }
 
 .ck.ck-editor {
+  margin-top: 1em !important;
   margin-bottom: 1em !important;
+}
+
+/* errors */
+
+.product-form .error {
+  color: red;
+  font-size: 14px;
+  padding: 0 0em;
+  margin-bottom: 0.4em;
+  margin-top: 0.4em;
 }

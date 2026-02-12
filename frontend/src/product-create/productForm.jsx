@@ -5,13 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { toast } from "react-toastify";
 
 const ProductForm = () => {
   const { id } = useParams();
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [existingImages, setExistingImages] = useState([]); 
+  const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     name: "",
@@ -32,7 +34,7 @@ const ProductForm = () => {
       });
       setExistingImages(res?.data?.images || []);
     } catch (err) {
-      console.log("error in getting product");
+      // console.log("error in getting product");
     }
   };
 
@@ -45,10 +47,23 @@ const ProductForm = () => {
   const handleFileChange = (e) => {
     const filesArray = Array.from(e.target.files);
     setNewImages((prev) => [...prev, ...filesArray]);
+    setErrors((prev) => {
+      const updated = { ...prev };
+      delete updated.images;
+      return updated;
+    });
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setErrors((prev) => {
+      const updated = { ...prev };
+      delete updated[name];
+      return updated;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -63,24 +78,50 @@ const ProductForm = () => {
     if (selectedProduct) {
       existingImages.forEach((img) => formData.append("existingImages", img));
       newImages.forEach((file) => formData.append("images", file));
-      await API.put(`/products/${selectedProduct._id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      alert("Product Updated");
-      navigate("/");
+
+      try {
+        await API.put(`/products/${selectedProduct._id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Product Updated");
+        navigate("/");
+      } catch (err) {
+        if (err.response?.data?.errors) {
+          const formattedErrors = {};
+
+          err.response.data.errors.forEach((error) => {
+            formattedErrors[error.path] = error.msg;
+          });
+
+          setErrors(formattedErrors);
+        }
+      }
     } else {
       newImages.forEach((file) => formData.append("images", file));
-      await API.post("/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      alert("Product Created");
-      navigate("/");
+
+      try {
+        await API.post("/products", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Product Created");
+        setForm({ name: "", price: "", description: "" });
+        navigate("/");
+      } catch (err) {
+        if (err.response?.data?.errors) {
+          const formattedErrors = {};
+
+          err.response.data.errors.forEach((error) => {
+            formattedErrors[error.path] = error.msg;
+          });
+
+          setErrors(formattedErrors);
+        }
+      }
     }
-    setForm({ name: "", price: "", description: "" });
   };
 
   return (
@@ -97,6 +138,8 @@ const ProductForm = () => {
           required
         />
 
+        {errors.name && <p className="error">{errors.name}</p>}
+
         <input
           type="number"
           name="price"
@@ -105,6 +148,7 @@ const ProductForm = () => {
           onChange={handleChange}
           required
         />
+        {errors.price && <p className="error">{errors.price}</p>}
 
         <CKEditor
           editor={ClassicEditor}
@@ -112,14 +156,23 @@ const ProductForm = () => {
           onChange={(event, editor) => {
             const data = editor.getData();
             setForm((prev) => ({ ...prev, description: data }));
+            setErrors((prev) => {
+              const updated = { ...prev };
+              delete updated.description;
+              return updated;
+            });
           }}
         />
+        {errors.description && <p className="error">{errors.description}</p>}
 
         <input type="file" name="images" multiple onChange={handleFileChange} />
 
-        {existingImages && existingImages.length > 0 && (
-          <p> Total {existingImages.length + newImages.length} images </p>
-        )}
+        {errors.images && <p className="error">{errors.images}</p>}
+
+        {(existingImages || newImages) &&
+          (existingImages.length > 0 || newImages.length > 0) && (
+            <p> Total {existingImages.length + newImages.length} images </p>
+          )}
         <div className="all-images">
           {[...existingImages].map((img, idx) => (
             <div key={`exist-${idx}`} className="image-preview">

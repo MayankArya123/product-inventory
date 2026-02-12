@@ -16,7 +16,7 @@ const checkAuth = async (req, res, next) => {
     req.user = returnedUser;
     next();
   } catch (err) {
-    console.log("error in middleware", err);
+    // console.log("error in middleware", err);
   }
 };
 

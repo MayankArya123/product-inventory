@@ -35,7 +35,7 @@ const login = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    console.log("err login", err);
+    // console.log("err login", err);
   }
 };
 
@@ -73,8 +73,23 @@ const register = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    console.log("err login in regsiter", err);
+    // console.log("err login in regsiter", err);
   }
 };
 
-module.exports = { login, register };
+const getLoggedInUser = async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(req.user.id);
+
+  res.json({
+    success: true,
+    user,
+  });
+
+  return res.json({
+    user: user,
+  });
+};
+
+module.exports = { login, register, getLoggedInUser };

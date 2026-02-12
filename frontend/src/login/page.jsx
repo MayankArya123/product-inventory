@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 import "./login.css";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -16,16 +17,16 @@ const Login = () => {
     try {
       const res = await API.post("/auth/login", form);
       localStorage.setItem("token", res.data.token);
-      navigate('/')
+      navigate("/");
     } catch (err) {
-      alert("Invalid credentials");
+      toast.error("Invalid credentails");
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2>Welcome Back   </h2>
+        <h2>Welcome Back </h2>
 
         <form onSubmit={handleSubmit}>
           <input

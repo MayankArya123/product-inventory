@@ -6,6 +6,8 @@ import Register from "./register/page";
 import ProductView from "./product-view/page";
 import ProductList from "./components/product/productList";
 import ProductForm from "./product-create/productForm";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
         <Route path="/product-create" element={<ProductForm />} />
         <Route path="/product-edit/:id" element={<ProductForm />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }
