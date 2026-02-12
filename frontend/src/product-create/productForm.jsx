@@ -33,9 +33,7 @@ const ProductForm = () => {
         description: res?.data?.description,
       });
       setExistingImages(res?.data?.images || []);
-    } catch (err) {
-      // console.log("error in getting product");
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {

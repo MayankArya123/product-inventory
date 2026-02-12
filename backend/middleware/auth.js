@@ -15,9 +15,7 @@ const checkAuth = async (req, res, next) => {
     const returnedUser = await User.findById(decoded?.user?.id);
     req.user = returnedUser;
     next();
-  } catch (err) {
-    // console.log("error in middleware", err);
-  }
+  } catch (err) {}
 };
 
 module.exports = checkAuth;

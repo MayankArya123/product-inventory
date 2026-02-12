@@ -81,9 +81,7 @@ const updateProduct = async (req, res) => {
     );
 
     res.status(200).json(updatedProduct);
-  } catch (err) {
-    // console.log("error in updating product", err);
-  }
+  } catch (err) {}
 };
 
 const getUserProducts = async (req, res) => {
@@ -95,9 +93,7 @@ const getUserProducts = async (req, res) => {
     });
 
     res.status(200).json(userProducts);
-  } catch (err) {
-    // console.log("error in fetching products", err);
-  }
+  } catch (err) {}
 };
 
 const deleteProduct = async (req, res) => {
@@ -108,7 +104,7 @@ const deleteProduct = async (req, res) => {
 
     res.status(200).json(deletedProduct);
   } catch (err) {
-    // console.log("error deleting product", err);
+    // ("error deleting product", err);
   }
 };
 
@@ -118,9 +114,7 @@ const getProduct = async (req, res) => {
   try {
     const product = await Product.findOne({ _id: productId });
     res.json(product);
-  } catch (err) {
-    // console.log("error in getting product check", err);
-  }
+  } catch (err) {}
 };
 
 module.exports = {

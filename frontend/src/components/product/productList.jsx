@@ -22,9 +22,7 @@ const ProductList = () => {
       await API.delete(`/products/${id}`);
       toast.success("Product Deleted successfully");
       fetchProducts();
-    } catch (err) {
-      // console.log("error deleting product", err);
-    }
+    } catch (err) {}
   };
 
   return (
@@ -39,13 +37,11 @@ const ProductList = () => {
         {products?.map((product) => (
           <div key={product._id} className="product-card">
             <div className="card-image-box">
-              {product?.images ? (
+              {product?.images && (
                 <img
                   src={`${process.env.REACT_APP_BACKEND_URL}/uploads/${product?.images[0]}`}
-                  alt="images"
+                  alt={`images-${product?.name}`}
                 />
-              ) : (
-                <img alt="img" />
               )}
             </div>
 

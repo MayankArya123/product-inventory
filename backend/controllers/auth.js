@@ -34,9 +34,7 @@ const login = async (req, res) => {
       user: returnedUser,
       token: token,
     });
-  } catch (err) {
-    // console.log("err login", err);
-  }
+  } catch (err) {}
 };
 
 const register = async (req, res) => {
@@ -72,9 +70,7 @@ const register = async (req, res) => {
       user: userSaved,
       token: token,
     });
-  } catch (err) {
-    // console.log("err login in regsiter", err);
-  }
+  } catch (err) {}
 };
 
 const getLoggedInUser = async (req, res) => {
