@@ -23,23 +23,24 @@ const ProductForm = () => {
 
   const navigate = useNavigate();
 
+  const getProduct = useCallback(async () => {
+    try {
+      const res = await API.get(`/products/${id}`);
+      setSelectedProduct(res?.data);
+      setForm({
+        name: res?.data?.name,
+        price: res?.data?.price,
+        description: res?.data?.description,
+      });
+      setExistingImages(res?.data?.images || []);
+    } catch (err) {}
+  }, [id]);
+
   useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const res = await API.get(`/products/${id}`);
-        setSelectedProduct(res?.data);
-        setForm({
-          name: res?.data?.name,
-          price: res?.data?.price,
-          description: res?.data?.description,
-        });
-        setExistingImages(res?.data?.images || []);
-      } catch (err) {}
-    };
     if (id) {
       getProduct();
     }
-  }, [id]);
+  }, [id, getProduct]);
 
   const handleFileChange = (e) => {
     const filesArray = Array.from(e.target.files);
